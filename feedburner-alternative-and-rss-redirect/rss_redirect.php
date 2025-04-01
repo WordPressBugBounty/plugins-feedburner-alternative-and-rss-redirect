@@ -5,7 +5,7 @@ Plugin URI: https://wordpress.org/plugins/feedburner-alternative-and-rss-redirec
 Description: Switch from Feedburner to the better and FREE service follow.it with just one click
 Author: follow.it
 Author URI: http://follow.it
-Version: 4.3
+Version: 4.4
 License: GPLv2
 */
 
@@ -23,6 +23,7 @@ global $wpdb;
 define('SFM_DOCROOT',    dirname(__FILE__));
 define('SFM_PLUGURL',    plugin_dir_url(__FILE__));
 define('SFM_WEBROOT',    str_replace(getcwd(), home_url(), dirname(__FILE__)));
+define('SFM_ACTIVE_RSS_CACHE_KEY', 'sfm_active_rss');
 
 /* load all files  */
 include SFM_DOCROOT . '/sfm_pluginNotice.php';
@@ -52,7 +53,7 @@ function sfmUnistaller()
 	$wpdb->query('DROP TABLE IF EXISTS `' . $wpdb->prefix . 'sfm_redirects`');
 }
 
-if (!get_option("SFM_pluginVersion") || get_option("SFM_pluginVersion") < 4.3) {
+if (!get_option("SFM_pluginVersion") || get_option("SFM_pluginVersion") < 4.4) {
 	add_action("init", "SFM_pluginUpdates");
 }
 function SFM_pluginUpdates()
@@ -79,7 +80,7 @@ function SFM_pluginUpdates()
 	}
 
 	/*Add version*/
-	update_option("SFM_pluginVersion", '4.3');
+	update_option("SFM_pluginVersion", '4.4');
 	add_option('SFM_installDate', date('Y-m-d h:i:s'));
 	add_option('SFM_RatingDiv', "no");
 }
@@ -190,9 +191,9 @@ function sfm_update_feed_urls()
 
 }
 
-if (get_option("SFM_pluginVersion") < 4.3) {
+if (get_option("SFM_pluginVersion") < 4.4) {
 	add_action('init', 'sfm_update_feed_urls');
-	update_option("SFM_pluginVersion", '4.3'); // update the plugin version
+	update_option("SFM_pluginVersion", '4.4'); // update the plugin version
 }
 
 

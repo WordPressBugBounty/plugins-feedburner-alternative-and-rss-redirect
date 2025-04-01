@@ -25,12 +25,19 @@ class sfmBasicActions
        
      	/* add admin menu */
      	add_action('admin_menu', array(&$this,'sfmAdminMenus'));
-       
+        /* delete the cache when required */
+		add_action('save_post', array(&$this,'deleteCache'));
+		add_action('edit_post', array(&$this,'deleteCache'));
+		add_action('delete_post', array(&$this,'deleteCache'));
+		add_action('create_category', array(&$this,'deleteCache'));
+		add_action('edit_category', array(&$this,'deleteCache'));
+		add_action('delete_category', array(&$this,'deleteCache'));
+		add_action('delete_user', array(&$this,'deleteCache'));
      	/* add admin notices */
      	//add_action('admin_notices', array(&$this,'sfm_activation_msg'));
        
      	/* list all active feeds */
-     	add_action('admin_init', array(&$this,'sfmListActiveRss'));
+      	// add_action('admin_init', array(&$this,'sfmListActiveRss'));
        
      	/* register sfm widget  */
      	add_action( 'widgets_init', array(&$this,'register_sfm_widgets'));
@@ -91,10 +98,14 @@ class sfmBasicActions
     public function sfmListActiveRss()
     {
       
-    	/* get the comment feed url */
-     	$return_data=array();
-     	$comments_link=get_bloginfo('comments_rss2_url');
-     	$return_data['comment_url']=$comments_link;
+	  if (false !== ($return_data = get_transient(SFM_ACTIVE_RSS_CACHE_KEY))) {
+	  	return $return_data;	 	
+	  }
+      
+	  /* get the comment feed url */
+	  $return_data=array();
+	  $comments_link=get_bloginfo('comments_rss2_url');
+	  $return_data['comment_url']=$comments_link;
       /* get categoires feed url */
       $cat_argu=array(
   			'type' 		=> 'post',
@@ -106,12 +117,32 @@ class sfmBasicActions
       $return_data['categoires']=$wp_categoires;
       
       /* get the authors */
-      global $wpdb;
-      $wp_authors=$wpdb->get_results('select distinct p.post_author,u.user_login from ' . $wpdb->posts . ' p LEFT JOIN ' . $wpdb->users . ' u on p.post_author=u.ID where p.post_status="publish" and p.post_type="post"',ARRAY_A);
-      $return_data['authors']=$wp_authors;
+	  global $wpdb;
+	  $sql = $wpdb->prepare(
+		  "SELECT u.ID AS post_author, u.user_login
+		   FROM {$wpdb->users} u
+		   INNER JOIN (
+			   SELECT DISTINCT p.post_author
+			   FROM {$wpdb->posts} p
+			   WHERE p.post_status = %s
+			   AND p.post_type = %s
+		   ) AS distinct_authors ON u.ID = distinct_authors.post_author",
+		  'publish',
+		  'post'
+	  );
+  
+	  $wp_authors = $wpdb->get_results($sql, ARRAY_A);
+	  $return_data['authors']=$wp_authors;
+
+	  set_transient(SFM_ACTIVE_RSS_CACHE_KEY, $return_data, HOUR_IN_SECONDS);
       return $return_data;
       
     }
+	public function deleteCache()
+	{
+		delete_transient(SFM_ACTIVE_RSS_CACHE_KEY);
+	}
+
     /* register widget to wordpress */
     public function  register_sfm_widgets()
 	{

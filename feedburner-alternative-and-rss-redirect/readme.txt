@@ -2,8 +2,8 @@
 Contributors: s-feeds, followit
 Tags: Feed, Feeds, s-feeds, RSS, Feedburner
 Requires at least: 3.0
-Tested up to: 6.6
-Stable tag: 4.3
+Tested up to: 6.8
+Stable tag: 4.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -79,6 +79,10 @@ Then go to plugin settings page and click on "Apply redirect" for all feeds you 
 
 
 == Changelog ==
+
+= 4.4 =
+* Tested with WordPress 6.8
+* Major performance improvements 
 
 = 4.3 =
 * Tested with WordPress 6.6
@@ -204,7 +208,6 @@ Then go to plugin settings page and click on "Apply redirect" for all feeds you 
 * First release
 
 == Upgrade Notice ==
-= 4.3 =
-* Tested with WordPress 6.6
-* Minor performance improvements 
-* Improvements for PHP 8 utilization
+= 4.4 =
+* Tested with WordPress 6.8
+* Major performance improvements 
